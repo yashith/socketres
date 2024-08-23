@@ -3,7 +3,7 @@
 #if defined(_WIN32) || defined(_WIN64)
     #include <winsock2.h>
     #include <io.h>
-#elif defined(_linux_)
+#elif defined(__linux__)
     #include <sys/socket.h>
     #include <netinet/in.h>
     #include <unistd.h>
