@@ -1,8 +1,13 @@
 #include <cstring>
 #include <iostream>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#if defined(_WIN32) || defined(_WIN64)
+    #include <winsock2.h>
+    #include <io.h>
+#elif defined(_linux_)
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <unistd.h>
+#endif
 
 
 int main(int argc, char const *argv[])
@@ -10,7 +15,7 @@ int main(int argc, char const *argv[])
     int serverSocket = socket(AF_INET,SOCK_STREAM,0);
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
+    serverAddress.sin_port = htons(8087);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
     bind(serverSocket,(sockaddr *)&serverAddress,sizeof(serverAddress));

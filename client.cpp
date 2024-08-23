@@ -1,8 +1,15 @@
 #include <cstring>
 #include <iostream>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#if defined(_WIN32) || defined(_WIN64)
+    #include <winsock2.h>
+    #include <io.h>
+#elif defined(_linux_)
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <unistd.h>
+#endif
+
+
 
 
 int main(int argc, char const *argv[])
