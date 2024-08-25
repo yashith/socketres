@@ -18,7 +18,10 @@ int main(int argc, char const *argv[])
     serverAddress.sin_port = htons(8087);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-    bind(serverSocket,(sockaddr *)&serverAddress,sizeof(serverAddress));
+    if(bind(serverSocket,(sockaddr *)&serverAddress,sizeof(serverAddress))<0){
+        perror("failed to bind");
+        exit(EXIT_FAILURE);
+    }
     listen(serverSocket, 5);
 
     int clientSocket = accept(serverSocket,nullptr,nullptr);
