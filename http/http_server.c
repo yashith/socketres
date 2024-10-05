@@ -21,7 +21,7 @@
 void *handle_client(void *);
 void build_http_response(const char *, const char *, char *, size_t *);
 char *get_mime_type(char *);
-char* url_decode(const char* );
+char* get_file_extention(char*);
 
 int server_fd;
 struct sockaddr_in server_addr;
@@ -86,24 +86,23 @@ void *handle_client(void *args)
         if (regexec(&regex, buffer, 2, matches, 0) == 0)
         {
             buffer[matches[1].rm_eo] = '\0';
-            const char *url_encoded_file_name = buffer + matches[1].rm_so;
-            // todo what is url_decode?
-            /*
-            char *file_name = url_decode(url_encoded_file_name);
+            //url_encode has relative file path
+            char *url_encoded_file_name = buffer + matches[1].rm_so;
             char file_ext[32];
             // todo what's get_file_extention
-            strcpy(file_ext, get_file_extention(file_name));
-
+            //file extention can be nullable here handle that
+            strcpy(file_ext, get_file_extention(url_encoded_file_name));
+            /*
             char *response = (char *)malloc(BUFFER_SIZE * 2 * sizeof(char));
             size_t response_len;
-            build_http_response(file_name, file_ext, response, &response_len);
             */
             char *response = (char *)malloc(BUFFER_SIZE * 2 * sizeof(char));
             size_t response_len;
+            build_http_response(url_encoded_file_name, file_ext, response, &response_len);
             //remove when done
-            response = "This works";
+            response = (char*)&file_ext;
             //remove this when done
-            response_len = strlen(response);
+            response_len = sizeof(response);
             send(client_fd, response, response_len, 0);
             //This is requierd but why errored?
             // free(response);
@@ -148,5 +147,14 @@ void build_http_response(const char *file_name, const char *file_ext, char *resp
 // }
 char* get_file_extention(char* file_name){
     //split the file name by . and retrun last * of the starting char
+    int file_name_size = strlen(file_name);
+    if(file_name_size >0){
+        for(int i = file_name_size  ;i>=0;i--){
+            char* dot = (file_name+i);
+            if(*dot == '.'){
+                return file_name+i;
+            }
+        }
+    }
     return NULL;
 }
