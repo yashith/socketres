@@ -45,16 +45,13 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
-    printf("Hit here1");
     if(listen(server_fd,10)<0){
         perror("listen failed");
         exit(1);
     }
 
-    printf("Hit here3");
     while (1) {
 
-        printf("Hit here2");
         struct sockaddr_in client_addr;
         socklen_t client_addr_len = sizeof(client_addr);
         int *client_fd = malloc(sizeof(int));
