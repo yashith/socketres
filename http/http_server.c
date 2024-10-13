@@ -89,22 +89,23 @@ void *handle_client(void *args)
             //url_encode has relative file path
             char *url_encoded_file_name = buffer + matches[1].rm_so;
             char file_ext[32];
-            // todo what's get_file_extention
-            //file extention can be nullable here handle that
+            //TODO file extention can be nullable here handle that
+            //FIXME segment fault when no file path in the url
             strcpy(file_ext, get_file_extention(url_encoded_file_name));
             /*
             char *response = (char *)malloc(BUFFER_SIZE * 2 * sizeof(char));
             size_t response_len;
             */
             char *response = (char *)malloc(BUFFER_SIZE * 2 * sizeof(char));
+            //TODO mange response_len, not assigned
             size_t response_len;
             build_http_response(url_encoded_file_name, file_ext, response, &response_len);
-            //remove when done
+            //TODO remove when done
             response = (char*)&file_ext;
-            //remove this when done
+            //TODO remove this when done
             response_len = sizeof(response);
             send(client_fd, response, response_len, 0);
-            //This is requierd but why errored?
+            //FIXME This is requierd but why errored?
             // free(response);
             // free(file_name);
         }
