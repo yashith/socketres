@@ -16,7 +16,7 @@
 #include <unistd.h>
 #endif
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 10240
 #define PORT 1234
 void *handle_client(void *);
 void build_http_response(const char *, const char *, char *, size_t *);
@@ -88,7 +88,14 @@ void *handle_client(void *args)
             char file_ext[32];
             //TODO file extention can be nullable here handle that
             //FIXME segment fault when no file path in the url
-            strcpy(file_ext, get_file_extention(url_encoded_file_name));
+            if(strlen(url_encoded_file_name)>0){
+                char* extloc = get_file_extention(url_encoded_file_name);
+                if(extloc != NULL){
+                    strcpy(file_ext,extloc);
+                }
+            }else{
+                //TODO WHat Happen here?
+            }
             /*
             char *response = (char *)malloc(BUFFER_SIZE * 2 * sizeof(char));
             size_t response_len;
@@ -97,10 +104,6 @@ void *handle_client(void *args)
             //TODO mange response_len, not assigned
             size_t response_len;
             build_http_response(url_encoded_file_name, file_ext, response, &response_len);
-            //TODO remove when done
-            response = (char*)&file_ext;
-            //TODO remove this when done
-            response_len = sizeof(response);
             send(client_fd, response, response_len, 0);
             //FIXME This is requierd but why errored?
             // free(response);
@@ -117,13 +120,13 @@ void *handle_client(void *args)
 void build_http_response(const char *file_name, const char *file_ext, char *response, size_t *response_len) {
     // const char* mime_type = get_mime_type(file_ext);
     char *header = (char *)malloc(BUFFER_SIZE * sizeof(char));
-    snprintf(header, BUFFER_SIZE, "TODO send header response");
+    //TODO assign headers and mimetypes
+    snprintf(header, BUFFER_SIZE, "HTTP/1.1 200 OK\r\n Content-Type: text/html\r\n\r\n");
     int file_fd = open(file_name, O_RDONLY);
 
     if (file_fd == -1) {
-        snprintf(response, BUFFER_SIZE, "TODO not found response");
-        *response_len = strlen(response);
-        return;
+        snprintf(header, BUFFER_SIZE, "HTTP/1.1 404 Not Found\r\n Content-Type: text/html\r\n\r\n");
+        file_fd = open("not_found.html",O_RDONLY);
     }
 
     struct stat file_stat;
